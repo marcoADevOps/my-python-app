@@ -25,19 +25,32 @@ jobs:
           docker tag $DOCKER_USER/my-python-app:latest $DOCKER_USER/my-python-app:latest
           docker push $DOCKER_USER/my-python-app:latest
 
-      - name: Update Kubernetes Manifests
+      - name: Debug - Show File Before and After
         run: |
-          sed -i "s|image: .*/my-python-app:.*|image: $DOCKER_USER/my-python-app:latest|" k8s/deployment.yaml
+          echo "Before update:"
+          cat k8s/deployment.yaml
+          sed -i "s|\(image: \).*my-python-app:.*|\1$DOCKER_USER/my-python-app:latest|" k8s/deployment.yaml
+          echo "After update:"
+          cat k8s/deployment.yaml
+
+      - name: Configure Git
+        run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
+
+      - name: Commit and Push Changes (If Needed)
+        run: |
           git add k8s/deployment.yaml
-          git commit -m "Updated image to latest version"
-          git push origin main
+          if git diff --cached --quiet; then
+            echo "No changes detected, skipping commit."
+          else
+            git commit -m "Updated image to latest version"
+            git push origin main
+          fi
 
       - name: Trigger ArgoCD Sync
         run: |
-          curl -X POST "http://<ARGOCD_SERVER>:<ARGOCD_PORT>/api/v1/applications/python-app/sync" \
+          curl -X POST "http://192.168.111.134:30637/api/v1/applications/python-app/sync" \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{}'
-
