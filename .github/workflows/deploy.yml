@@ -50,7 +50,7 @@ jobs:
 
       - name: Trigger ArgoCD Sync
         run: |
-          curl -X POST "http://192.168.111.134:30637/api/v1/applications/python-app/sync" \
+          curl -X POST "http://192.168.111.134:32165/api/v1/applications/python-app/sync" \
           -H "Authorization: Bearer ${{ secrets.ARGOCD_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d '{}'
