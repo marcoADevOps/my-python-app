@@ -18,12 +18,12 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t YOUR_DOCKER_HUB_USERNAME/my-python-app:latest .
-          docker push YOUR_DOCKER_HUB_USERNAME/my-python-app:latest
+          docker build -t DOCKER_USERNAME/my-python-app:latest .
+          docker push DOCKER_USERNAME/my-python-app:latest
 
       - name: Update Kubernetes Manifests
         run: |
-          sed -i "s|image: YOUR_DOCKER_HUB_USERNAME/my-python-app:.*|image: YOUR_DOCKER_HUB_USERNAME/my-python-app:latest|" k8s/deployment.yaml
+          sed -i "s|image: DOCKER_USERNAME/my-python-app:.*|image: DOCKER_USERNAME/my-python-app:latest|" k8s/deployment.yaml
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           git add k8s/deployment.yaml
